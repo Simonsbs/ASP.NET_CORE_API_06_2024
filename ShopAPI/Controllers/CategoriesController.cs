@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShopAPI.Models;
 
 namespace ShopAPI.Controllers;
 
@@ -6,16 +7,21 @@ namespace ShopAPI.Controllers;
 [Route("api/categories")]
 public class CategoriesController : ControllerBase {
 	[HttpGet]
-	public JsonResult GetCategories() {
-		return new JsonResult(MyDataStore.Current.Categories);
+	public ActionResult<IEnumerable<CategoryDTO>> GetCategories() {
+		return Ok(MyDataStore.Current.Categories);
 	}
 
 	[HttpGet("{id}")]
-	public JsonResult GetCategory(int id) {
+	public ActionResult<CategoryDTO> GetCategory(int id) {
 		var result = MyDataStore.
 			Current.
 			Categories.
 			FirstOrDefault(c => c.ID == id);
-		return new JsonResult(result);
+
+		if (result == null) {
+			return NotFound();
+		}
+
+		return Ok(result);
 	}
 }

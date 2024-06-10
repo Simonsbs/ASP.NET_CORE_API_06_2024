@@ -9,7 +9,7 @@ public class Program {
 
 
 		builder.Services.AddControllers(options => {
-			options.ReturnHttpNotAcceptable = true;
+			//options.ReturnHttpNotAcceptable = true;
 		}).AddXmlDataContractSerializerFormatters();
 
 

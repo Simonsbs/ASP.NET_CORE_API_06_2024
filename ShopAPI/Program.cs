@@ -7,6 +7,20 @@ public class Program {
 
 		// Add services to the container.
 
+		builder.Services.AddProblemDetails(options => {
+			options.CustomizeProblemDetails = ctx => {
+				ctx.
+					ProblemDetails.
+					Extensions.
+					Add("Example", "Simon Was here");
+
+				ctx.
+					ProblemDetails.
+					Extensions.
+					Add("Machine", Environment.MachineName);
+			};
+		});
+
 		builder.Services.AddControllers();
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();

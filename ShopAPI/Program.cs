@@ -7,6 +7,12 @@ public class Program {
 
 		// Add services to the container.
 
+
+		builder.Services.AddControllers(options => {
+			options.ReturnHttpNotAcceptable = true;
+		}).AddXmlDataContractSerializerFormatters();
+
+
 		builder.Services.AddProblemDetails(options => {
 			options.CustomizeProblemDetails = ctx => {
 				ctx.
@@ -21,7 +27,7 @@ public class Program {
 			};
 		});
 
-		builder.Services.AddControllers();
+		//builder.Services.AddControllers();
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();

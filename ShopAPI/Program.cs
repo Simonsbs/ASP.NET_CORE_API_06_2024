@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.StaticFiles;
+
 namespace ShopAPI;
 
 public class Program {
@@ -31,6 +33,9 @@ public class Program {
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();
+
+		builder.Services.
+			AddSingleton<FileExtensionContentTypeProvider>();
 
 		var app = builder.Build();
 

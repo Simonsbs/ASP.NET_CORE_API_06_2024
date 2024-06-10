@@ -3,8 +3,9 @@
 namespace ShopAPI;
 
 public class MyDataStore {
-	private List<CategoryDTO> Categories { get; set; }
+	public List<CategoryDTO> Categories { get; set; }
 
+	public static MyDataStore Current { get; } = new MyDataStore();
 
 	public MyDataStore() {
 		Categories = new List<CategoryDTO> {

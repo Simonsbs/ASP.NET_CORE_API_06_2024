@@ -5,7 +5,9 @@ namespace ShopAPI.Controllers;
 
 [ApiController]
 [Route("api/categories")]
-public class CategoriesController : ControllerBase {
+public class CategoriesController(ILogger<CategoriesController> _logger) 
+	: ControllerBase {	
+
 	[HttpGet]
 	public ActionResult<IEnumerable<CategoryDTO>> GetCategories() {
 		return Ok(MyDataStore.Current.Categories);
@@ -19,6 +21,8 @@ public class CategoriesController : ControllerBase {
 			FirstOrDefault(c => c.ID == id);
 
 		if (result == null) {
+			_logger.LogWarning($"No category with id: {id}");
+
 			return NotFound();
 		}
 

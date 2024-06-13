@@ -8,6 +8,12 @@ namespace ShopAPI.Controllers;
 [ApiController]
 [Route("api/categories/{categoryID}/products")]
 public class ProductsController : ControllerBase {
+	private ILogger<ProductsController> _logger;
+	
+	public ProductsController(ILogger<ProductsController> logger) {
+		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+	}
+
 	[HttpGet]
 	public ActionResult<IEnumerable<ProductDTO>> GetProducts(int categoryID) {
 		var products = MyDataStore.Current.Categories
@@ -15,6 +21,8 @@ public class ProductsController : ControllerBase {
 			.Products;
 
 		if (products == null) {
+			_logger.LogWarning($"No category with id: {categoryID}");
+
 			return NotFound();
 		}
 
@@ -89,8 +97,8 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpPatch("{productID}")]
-	public ActionResult PatchProduct(int categoryID, 
-		int productID, 
+	public ActionResult PatchProduct(int categoryID,
+		int productID,
 		JsonPatchDocument<ProductForUpdateDTO> patchDocument) {
 
 		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);

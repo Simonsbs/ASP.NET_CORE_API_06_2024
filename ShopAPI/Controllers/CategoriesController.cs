@@ -5,8 +5,8 @@ namespace ShopAPI.Controllers;
 
 [ApiController]
 [Route("api/categories")]
-public class CategoriesController(ILogger<CategoriesController> _logger) 
-	: ControllerBase {	
+public class CategoriesController(ILogger<CategoriesController> _logger)
+	: ControllerBase {
 
 	[HttpGet]
 	public ActionResult<IEnumerable<CategoryDTO>> GetCategories() {
@@ -15,26 +15,17 @@ public class CategoriesController(ILogger<CategoriesController> _logger)
 
 	[HttpGet("{id}")]
 	public ActionResult<CategoryDTO> GetCategory(int id) {
-		throw new Exception("Simon did something wrong!");
+		var result = MyDataStore.
+			Current.
+			Categories.
+			FirstOrDefault(c => c.ID == id);
 
-		try {
-			
+		if (result == null) {
+			_logger.LogWarning($"No category with id: {id}");
 
-			var result = MyDataStore.
-				Current.
-				Categories.
-				FirstOrDefault(c => c.ID == id);
-
-			if (result == null) {
-				_logger.LogWarning($"No category with id: {id}");
-
-				return NotFound();
-			}
-
-			return Ok(result);
-		} catch (Exception ex) {
-			_logger.LogCritical($"Exception while calling GetCategory {id}", ex);
-			return StatusCode(500, $"Exception whil calling GetCategory {id}");
+			return NotFound();
 		}
+
+		return Ok(result);
 	}
 }

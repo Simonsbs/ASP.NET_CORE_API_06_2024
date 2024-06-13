@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.StaticFiles;
+using Serilog;
 
 namespace ShopAPI;
 
@@ -7,8 +8,15 @@ public class Program {
 	public static void Main(string[] args) {
 		var builder = WebApplication.CreateBuilder(args);
 
-		builder.Logging.ClearProviders();
-		builder.Logging.AddConsole();
+		Log.Logger = new LoggerConfiguration()
+			.MinimumLevel.Warning()
+#if DEBUG
+			.WriteTo.Console()
+#endif
+			.WriteTo.File("logs/mylog.txt", rollingInterval: RollingInterval.Minute)
+			.CreateLogger();
+
+		builder.Host.UseSerilog();
 
 		// Add services to the container.
 		builder.Services.AddControllers(options => {

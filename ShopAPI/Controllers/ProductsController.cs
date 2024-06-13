@@ -20,7 +20,7 @@ public class ProductsController : ControllerBase {
 		return Ok(products);
 	}
 
-	[HttpGet("productID", Name = "GetSingleProduct")]
+	[HttpGet("{productID}", Name = "GetSingleProduct")]
 	public ActionResult<ProductDTO> GetProduct(int categoryID, int productID) {
 		var product = MyDataStore.Current.Categories
 			.FirstOrDefault(c => c.ID == categoryID)?
@@ -36,7 +36,7 @@ public class ProductsController : ControllerBase {
 
 	[HttpPost]
 	public ActionResult CreateProduct(
-		int categoryID, 
+		int categoryID,
 		ProductForCreationDTO productToCreate) {
 
 		var category = MyDataStore.Current.Categories
@@ -66,5 +66,24 @@ public class ProductsController : ControllerBase {
 				},
 				productDTO
 			);
+	}
+
+	[HttpPut("{productID}")]
+	public ActionResult UpdateProduct(int categoryID, int productID, ProductForUpdateDTO updatedProduct) {
+		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
+		if (category == null) {
+			return NotFound("Category not found inorder to update the product");
+		}
+
+		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		if (product == null) {
+			return NotFound("Product not found");
+		}
+
+		product.Name = updatedProduct.Name;
+		product.Description = updatedProduct.Description;
+
+		//return Ok(product);
+		return NoContent();
 	}
 }

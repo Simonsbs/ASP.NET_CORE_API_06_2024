@@ -2,8 +2,8 @@
 
 namespace ShopAPI.Models;
 
-public class ProductForCreationDTO {
-	[Required(ErrorMessage = "Name is required when creating")]
+public class ProductForUpdateDTO {
+	[Required(ErrorMessage = "Name is required when updating")]
 	[MaxLength(100)]
 	public string Name { get; set; }
 

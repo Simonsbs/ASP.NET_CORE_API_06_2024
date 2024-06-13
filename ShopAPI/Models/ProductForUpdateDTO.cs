@@ -4,7 +4,7 @@ namespace ShopAPI.Models;
 
 public class ProductForUpdateDTO {
 	[Required(ErrorMessage = "Name is required when updating")]
-	[MaxLength(100)]
+	[MaxLength(20)]
 	public string Name { get; set; }
 
 	[MaxLength(200)]

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Models;
 
@@ -84,6 +85,42 @@ public class ProductsController : ControllerBase {
 		product.Description = updatedProduct.Description;
 
 		//return Ok(product);
+		return NoContent();
+	}
+
+	[HttpPatch("{productID}")]
+	public ActionResult PatchProduct(int categoryID, 
+		int productID, 
+		JsonPatchDocument<ProductForUpdateDTO> patchDocument) {
+
+		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
+		if (category == null) {
+			return NotFound("Category not found inorder to update the product");
+		}
+
+		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		if (product == null) {
+			return NotFound("Product not found");
+		}
+
+		var productToUpdate = new ProductForUpdateDTO() {
+			Name = product.Name,
+			Description = product.Description
+		};
+
+		patchDocument.ApplyTo(productToUpdate, ModelState);
+
+		if (!ModelState.IsValid) {
+			return BadRequest(ModelState);
+		}
+
+		if (!TryValidateModel(productToUpdate)) {
+			return BadRequest(ModelState);
+		}
+
+		product.Name = productToUpdate.Name;
+		product.Description = productToUpdate.Description;
+
 		return NoContent();
 	}
 }

@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.StaticFiles;
 using Serilog;
+using ShopAPI.Services;
 
 namespace ShopAPI;
 
@@ -13,7 +14,7 @@ public class Program {
 #if DEBUG
 			.WriteTo.Console()
 #endif
-			.WriteTo.File("logs/mylog.txt", rollingInterval: RollingInterval.Minute)
+			.WriteTo.File("logs/mylog.txt", rollingInterval: RollingInterval.Day)
 			.CreateLogger();
 
 		builder.Host.UseSerilog();
@@ -47,6 +48,14 @@ public class Program {
 
 		builder.Services.
 			AddSingleton<FileExtensionContentTypeProvider>();
+
+
+#if DEBUG
+		builder.Services.AddTransient<IMailService, LocalMailService>();
+#else
+		builder.Services.AddTransient<IMailService, ProductionMailService>();
+#endif
+
 
 		var app = builder.Build();
 

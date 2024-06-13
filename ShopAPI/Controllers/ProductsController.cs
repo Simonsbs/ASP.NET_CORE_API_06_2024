@@ -123,4 +123,21 @@ public class ProductsController : ControllerBase {
 
 		return NoContent();
 	}
+
+	[HttpDelete("{productID}")]
+	public ActionResult DeleteProduct(int categoryID, int productID) {
+		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
+		if (category == null) {
+			return NotFound("Category not found inorder to update the product");
+		}
+
+		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		if (product == null) {
+			return NotFound("Product not found");
+		}
+
+		category.Products.Remove(product);
+
+		return NoContent();
+	}
 }

@@ -12,6 +12,8 @@ public class ProductsController : ControllerBase {
 	
 	public ProductsController(ILogger<ProductsController> logger) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+		//var log = HttpContext.RequestServices.GetService(typeof(ILogger<ProductsController>));
 	}
 
 	[HttpGet]

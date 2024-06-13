@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.StaticFiles;
 using Serilog;
+using ShopAPI.Contexts;
 using ShopAPI.Services;
 
 namespace ShopAPI;
@@ -56,6 +57,7 @@ public class Program {
 		builder.Services.AddTransient<IMailService, ProductionMailService>();
 #endif
 
+		builder.Services.AddDbContext<MyDbContext>();
 
 		var app = builder.Build();
 

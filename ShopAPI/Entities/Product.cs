@@ -13,6 +13,13 @@ public class Product {
 
 	[MaxLength(200)]
 	public string? Description { get; set; }
+
+    public float Price { get; set; }
+
+    //[ForeignKey("CategoryID")]
+    public Category? Category { get; set; }
+
+    public int CategoryID { get; set; }
 }
 
 

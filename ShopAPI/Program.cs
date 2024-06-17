@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ShopAPI.Contexts;
 using ShopAPI.Services;
@@ -57,13 +58,14 @@ public class Program {
 		builder.Services.AddTransient<IMailService, ProductionMailService>();
 #endif
 
-		builder.Services.AddDbContext<MyDbContext>();
+		builder.Services.AddDbContext<MyDbContext>(options => 
+			options.UseSqlite("Data Source=MyShop.db"));
 
 		var app = builder.Build();
 
 		if (!app.Environment.IsDevelopment()) {
 			app.UseExceptionHandler();
-		}		
+		}
 
 		// Configure the HTTP request pipeline.
 		if (app.Environment.IsDevelopment()) {

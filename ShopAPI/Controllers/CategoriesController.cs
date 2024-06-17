@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Models;
+using ShopAPI.Repositories;
 using ShopAPI.Services;
 
 namespace ShopAPI.Controllers;
@@ -8,12 +9,24 @@ namespace ShopAPI.Controllers;
 [Route("api/categories")]
 public class CategoriesController(
 	ILogger<CategoriesController> _logger,
-	IMailService _mailService)
+	IMailService _mailService,
+	ICategoryRepository _repo)
 	: ControllerBase {
 
 	[HttpGet]
-	public ActionResult<IEnumerable<CategoryDTO>> GetCategories() {
-		return Ok(MyDataStore.Current.Categories);
+	public async Task<ActionResult<IEnumerable<CategoryWithoutProductsDTO>>> GetCategories() {
+		IEnumerable<Entities.Category> categories = await _repo.GetCategoriesAsync();
+
+		var results = new List<CategoryWithoutProductsDTO>();
+		foreach (Entities.Category category in categories) {
+			results.Add(new CategoryWithoutProductsDTO {
+				ID = category.ID,
+				Name = category.Name,
+				Description = category.Description
+			});
+		}
+
+		return Ok(results);
 	}
 
 	[HttpGet("{id}")]

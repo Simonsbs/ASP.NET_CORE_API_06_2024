@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ShopAPI.Contexts;
+using ShopAPI.Repositories;
 using ShopAPI.Services;
 
 namespace ShopAPI;
@@ -58,10 +59,19 @@ public class Program {
 		builder.Services.AddTransient<IMailService, ProductionMailService>();
 #endif
 
-		builder.Services.AddDbContext<MyDbContext>(options => 
-			options.UseSqlite("Data Source=MyShop.db"));
+		builder.Services.AddDbContext<MyDbContext>(options =>
+			options.UseSqlite(builder.Configuration["ConnectionStrings:Main"]));
+
+		builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+		builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 		var app = builder.Build();
+
+		using (var scope = app.Services.CreateScope()) {
+			var context = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+			context.Database.Migrate();
+		}
 
 		if (!app.Environment.IsDevelopment()) {
 			app.UseExceptionHandler();

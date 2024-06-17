@@ -1,7 +1,10 @@
 ﻿using System.Collections;
+using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using ShopAPI.Entities;
 using ShopAPI.Models;
+using ShopAPI.Repositories;
 using ShopAPI.Services;
 
 namespace ShopAPI.Controllers;
@@ -11,66 +14,57 @@ namespace ShopAPI.Controllers;
 public class ProductsController : ControllerBase {
 	private ILogger<ProductsController> _logger;
 	private IMailService _mailService;
+	private IProductRepository _repo;
+	private IMapper _mapper;
 
-	public ProductsController(ILogger<ProductsController> logger, IMailService mailService) {
+	public ProductsController(ILogger<ProductsController> logger, IMailService mailService, IProductRepository repo, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		_mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
+		_repo = repo ?? throw new ArgumentNullException(nameof(repo));
+		_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
 		//var log = HttpContext.RequestServices.GetService(typeof(ILogger<ProductsController>));
 	}
 
 	[HttpGet]
-	public ActionResult<IEnumerable<ProductDTO>> GetProducts(int categoryID) {
-		var products = MyDataStore.Current.Categories
-			.FirstOrDefault(c => c.ID == categoryID)?
-			.Products;
-
-		if (products == null) {
-			_logger.LogWarning($"No category with id: {categoryID}");
-			_mailService.Send("GetProducts", $"No category with id: {categoryID}");
-			return NotFound();
+	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(int categoryID) {
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		return Ok(products);
+		IEnumerable<Product> result = await _repo.GetProductsForCategoryAsync(categoryID);
+
+		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(result));
 	}
 
 	[HttpGet("{productID}", Name = "GetSingleProduct")]
-	public ActionResult<ProductDTO> GetProduct(int categoryID, int productID) {
-		var product = MyDataStore.Current.Categories
-			.FirstOrDefault(c => c.ID == categoryID)?
-			.Products
-			.FirstOrDefault(p => p.ID == productID);
-
-		if (product == null) {
-			return NotFound();
+	public async Task<ActionResult<ProductDTO>> GetProduct(int categoryID, int productID) {
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		return Ok(product);
+		Product? result = await _repo.GetProductForCategoryAsync(categoryID, productID);
+		if (result == null) {
+			return NotFound("No such product in the category");
+		}
+
+		return Ok(_mapper.Map<ProductDTO>(result));
 	}
 
 	[HttpPost]
-	public ActionResult CreateProduct(
+	public async Task<ActionResult<ProductDTO>> CreateProduct(
 		int categoryID,
 		ProductForCreationDTO productToCreate) {
 
-		var category = MyDataStore.Current.Categories
-			.FirstOrDefault(c => c.ID == categoryID);
-
-		if (category == null) {
-			return NotFound();
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		var maxProductID = MyDataStore.Current.Categories
-			.SelectMany(c => c.Products)
-			.Max(p => p.ID);
+		Product prod = _mapper.Map<Product>(productToCreate);
 
-		ProductDTO productDTO = new() {
-			ID = maxProductID + 1,
-			Name = productToCreate.Name,
-			Description = productToCreate.Description
-		};
-
-		category.Products.Add(productDTO);
+		await _repo.AddProductForCategoryAsync(categoryID, prod);
+		
+		ProductDTO productDTO = _mapper.Map<ProductDTO>(prod);
 
 		return CreatedAtRoute(
 				"GetSingleProduct",
@@ -83,21 +77,20 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpPut("{productID}")]
-	public ActionResult UpdateProduct(int categoryID, int productID, ProductForUpdateDTO updatedProduct) {
-		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
-		if (category == null) {
-			return NotFound("Category not found inorder to update the product");
+	public async Task<ActionResult> UpdateProduct(int categoryID, int productID, ProductForUpdateDTO updatedProduct) {
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		Product? product = await _repo.GetProductForCategoryAsync(categoryID, productID);
 		if (product == null) {
 			return NotFound("Product not found");
 		}
 
-		product.Name = updatedProduct.Name;
-		product.Description = updatedProduct.Description;
+		_mapper.Map(updatedProduct, product);
 
-		//return Ok(product);
+		await _repo.SaveChangesAsync();
+
 		return NoContent();
 	}
 

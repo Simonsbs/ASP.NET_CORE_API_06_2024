@@ -8,11 +8,7 @@ public interface ICategoryRepository {
 	Task<IEnumerable<Category>> GetCategoriesAsync();
 
 	Task<Category?> GetCategoryAsync(int id, bool includeProducts);
-
-	Task<IEnumerable<Product>> GetProductsForCategoryAsync(int categoryID);
-
 }
-
 
 public class CategoryRepository(MyDbContext _db) : ICategoryRepository {
 
@@ -33,9 +29,9 @@ public class CategoryRepository(MyDbContext _db) : ICategoryRepository {
 				.FirstOrDefaultAsync();
 	}
 
-	public async Task<IEnumerable<Product>> GetProductsForCategoryAsync(int categoryID) {
-		return await _db.Products
-			.Where(p => p.CategoryID == categoryID)
-			.ToListAsync();
-	}
+	//public async Task<IEnumerable<Product>> GetProductsForCategoryAsync(int categoryID) {
+	//	return await _db.Products
+	//		.Where(p => p.CategoryID == categoryID)
+	//		.ToListAsync();
+	//}
 }

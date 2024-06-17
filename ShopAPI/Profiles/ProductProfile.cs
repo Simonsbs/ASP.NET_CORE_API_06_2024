@@ -6,5 +6,7 @@ namespace ShopAPI.Profiles;
 public class ProductProfile : Profile {
 	public ProductProfile() {
 		CreateMap<Entities.Product, ProductDTO>();
+		CreateMap<ProductForCreationDTO, Entities.Product>();
+		CreateMap<ProductForUpdateDTO, Entities.Product>();
 	}
 }

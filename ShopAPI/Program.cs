@@ -63,6 +63,7 @@ public class Program {
 			options.UseSqlite(builder.Configuration["ConnectionStrings:Main"]));
 
 		builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+		builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 		builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

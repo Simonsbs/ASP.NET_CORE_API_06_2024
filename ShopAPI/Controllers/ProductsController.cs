@@ -131,18 +131,17 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpDelete("{productID}")]
-	public ActionResult DeleteProduct(int categoryID, int productID) {
-		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
-		if (category == null) {
-			return NotFound("Category not found inorder to update the product");
+	public async Task<ActionResult> DeleteProduct(int categoryID, int productID) {
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		Product? product = await _repo.GetProductForCategoryAsync(categoryID, productID);
 		if (product == null) {
 			return NotFound("Product not found");
 		}
 
-		category.Products.Remove(product);
+		await _repo.DeleteProduct(product);
 
 		return NoContent();
 	}

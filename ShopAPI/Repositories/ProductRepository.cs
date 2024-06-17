@@ -12,6 +12,7 @@ public interface IProductRepository {
 	Task<bool> CheckCategoryExists(int categoryID);
 	Task AddProductForCategoryAsync(int categoryID, Product product, bool autoSave = true);
 	Task SaveChangesAsync();
+	Task DeleteProduct(Product product, bool autoSave = true);
 }
 
 
@@ -42,7 +43,17 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 		}		
 	}
 
+	public async Task DeleteProduct(Product product, bool autoSave = true) {
+		_db.Products.Remove(product);
+
+		if (autoSave) {
+			await _db.SaveChangesAsync();
+		}
+	}
+
 	public async Task SaveChangesAsync() {
 		await _db.SaveChangesAsync();
 	}
+
+	
 }

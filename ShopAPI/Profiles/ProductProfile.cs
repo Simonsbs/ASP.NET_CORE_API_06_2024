@@ -8,5 +8,6 @@ public class ProductProfile : Profile {
 		CreateMap<Entities.Product, ProductDTO>();
 		CreateMap<ProductForCreationDTO, Entities.Product>();
 		CreateMap<ProductForUpdateDTO, Entities.Product>();
+		CreateMap<Entities.Product, ProductForUpdateDTO>();
 	}
 }

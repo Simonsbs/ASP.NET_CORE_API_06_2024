@@ -95,37 +95,34 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpPatch("{productID}")]
-	public ActionResult PatchProduct(int categoryID,
+	public async Task<ActionResult> PatchProduct(int categoryID,
 		int productID,
 		JsonPatchDocument<ProductForUpdateDTO> patchDocument) {
 
-		var category = MyDataStore.Current.Categories.FirstOrDefault(c => c.ID == categoryID);
-		if (category == null) {
-			return NotFound("Category not found inorder to update the product");
+		if (!await _repo.CheckCategoryExists(categoryID)) {
+			return NotFound("Category not found");
 		}
 
-		var product = category.Products.FirstOrDefault(p => p.ID == productID);
+		Product? product = await _repo.GetProductForCategoryAsync(categoryID, productID);
 		if (product == null) {
 			return NotFound("Product not found");
 		}
 
-		var productToUpdate = new ProductForUpdateDTO() {
-			Name = product.Name,
-			Description = product.Description
-		};
+		ProductForUpdateDTO productForUpdate = _mapper.Map<ProductForUpdateDTO>(product);
 
-		patchDocument.ApplyTo(productToUpdate, ModelState);
+		patchDocument.ApplyTo(productForUpdate, ModelState);
 
 		if (!ModelState.IsValid) {
 			return BadRequest(ModelState);
 		}
 
-		if (!TryValidateModel(productToUpdate)) {
+		if (!TryValidateModel(productForUpdate)) {
 			return BadRequest(ModelState);
 		}
 
-		product.Name = productToUpdate.Name;
-		product.Description = productToUpdate.Description;
+		_mapper.Map(productForUpdate, product);
+
+		await _repo.SaveChangesAsync();
 
 		return NoContent();
 	}

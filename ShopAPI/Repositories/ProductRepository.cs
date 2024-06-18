@@ -13,7 +13,7 @@ public interface IProductRepository {
 	Task AddProductForCategoryAsync(int categoryID, Product product, bool autoSave = true);
 	Task SaveChangesAsync();
 	Task DeleteProduct(Product product, bool autoSave = true);
-	Task<ICollection<Product>> GetProductsAsync(string? name, string? query);
+	Task<ICollection<Product>> GetProductsAsync(string? name, string? query, int pageNumber, int pageSize);
 
 	IQueryable<Product> GetProductsQuery();
 }
@@ -63,7 +63,12 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 		return _db.Products.OrderBy(p => p.Name);
 	}
 
-	public async Task<ICollection<Product>> GetProductsAsync(string? name, string? query) {
+	public async Task<ICollection<Product>> GetProductsAsync(
+		string? name, 
+		string? query, 
+		int pageNumber, 
+		int pageSize
+		) {
 		IQueryable<Product> collection = _db.Products as IQueryable<Product>;
 
 		if (!string.IsNullOrEmpty(name)) {
@@ -78,7 +83,10 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 			(p.Description != null && p.Description.Contains(query)));
 		}
 
-		collection = collection.OrderBy(p => p.Name);
+		collection = collection
+			.OrderBy(p => p.Name)
+			.Skip((pageNumber - 1) * pageSize)
+			.Take(pageSize);
 
 		return await collection.ToListAsync();
 	}

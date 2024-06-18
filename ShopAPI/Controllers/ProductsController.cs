@@ -12,10 +12,12 @@ namespace ShopAPI.Controllers;
 [ApiController]
 [Route("api/categories/{categoryID}/products")]
 public class ProductsController : ControllerBase {
+	const int MAX_PAGE_SIZE = 2;
+
 	private ILogger<ProductsController> _logger;
 	private IMailService _mailService;
 	private IProductRepository _repo;
-	private IMapper _mapper;
+	private IMapper _mapper;	
 
 	public ProductsController(ILogger<ProductsController> logger, IMailService mailService, IProductRepository repo, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -40,9 +42,15 @@ public class ProductsController : ControllerBase {
 	[HttpGet("/api/products")]
 	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(
 			string? name,
-			string? query
+			string? query,
+			int pageNumber = 1,
+			int pageSize = 2
 		) {
-		var results = await _repo.GetProductsAsync(name, query);
+		if (pageSize > MAX_PAGE_SIZE) {
+			pageSize = MAX_PAGE_SIZE;
+		}
+
+		var results = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
 		
 		// Not recomended !!!
 		// var results = _repo.GetProductsQuery();

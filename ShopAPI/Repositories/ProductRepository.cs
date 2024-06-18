@@ -88,18 +88,21 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 
 		int count = collection.Count();
 
-		PagingMetadataDTO meta = new PagingMetadataDTO {
-			TotalItemCount = count,
-			PageSize = pageSize,
-			PageNumber = pageNumber,
-		};
-
 		collection = collection
 			.OrderBy(p => p.Name)
 			.Skip((pageNumber - 1) * pageSize)
 			.Take(pageSize);
 
 		var items = await collection.ToListAsync();
+
+		PagingMetadataDTO meta = new PagingMetadataDTO {
+			TotalItemCount = count,
+			PageSize = pageSize,
+			PageNumber = pageNumber,
+			CurrentPageCount = items.Count,
+		};
+
+		
 
 		return (items, meta);
 	}

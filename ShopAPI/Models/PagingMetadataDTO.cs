@@ -5,5 +5,5 @@ public class PagingMetadataDTO {
     public int TotalPageCount => TotalItemCount / PageSize;
     public int PageSize { get; set; }
     public int PageNumber { get; set; }
-
+    public int CurrentPageCount { get; set; }
 }

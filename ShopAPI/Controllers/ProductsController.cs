@@ -62,6 +62,7 @@ public class ProductsController : ControllerBase {
 		Response.Headers.Add("X-TotalPageCount", meta.TotalPageCount.ToString());
 		Response.Headers.Add("X-PageSize", meta.PageSize.ToString());
 		Response.Headers.Add("X-PageNumber", meta.PageNumber.ToString());
+		Response.Headers.Add("X-CurrentPageCount", meta.CurrentPageCount.ToString());
 
 		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(results));
 	}

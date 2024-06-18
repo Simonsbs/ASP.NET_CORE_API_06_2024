@@ -14,7 +14,8 @@ namespace ShopAPI.Controllers;
 [Route("api/authentication")]
 public class AuthenticationController(
 	ILogger<AuthenticationController> _logger,
-	IUserRepository _repo) : ControllerBase {
+	IUserRepository _repo,
+	IConfiguration _config) : ControllerBase {
 
 	public class AuthenticationRequest {
         public string Username { get; set; }
@@ -40,7 +41,7 @@ public class AuthenticationController(
 
 		SymmetricSecurityKey key = new SymmetricSecurityKey(
 			Convert
-			.FromBase64String("w8u//VCX+Em49CJqLK+YFLqF+uAMej+xeKVGTNreIVk=")
+			.FromBase64String(_config["Authentication:MyKey"])
 		);
 
 		SigningCredentials creds = new SigningCredentials(
@@ -49,8 +50,8 @@ public class AuthenticationController(
 		);
 
 		JwtSecurityToken token = new JwtSecurityToken(
-			"https://localhost:7234",
-			"ShopUsers",
+			_config["Authentication:Issuer"],
+			_config["Authentication:Audience"],
 			claims,
 			DateTime.UtcNow,
 			DateTime.UtcNow.AddDays(1),

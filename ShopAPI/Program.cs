@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using ShopAPI.Contexts;
 using ShopAPI.Repositories;
@@ -68,6 +69,24 @@ public class Program {
 
 		builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+		builder.Services.AddAuthentication("Bearer")
+			.AddJwtBearer(o => {
+				o.TokenValidationParameters = new TokenValidationParameters {
+					ValidateIssuer = true,
+					ValidIssuer = builder.Configuration["Authentication:Issuer"],
+
+					ValidateAudience = true,
+					ValidAudience = builder.Configuration["Authentication:Audience"],
+
+					ValidateIssuerSigningKey = true,
+					IssuerSigningKey = new SymmetricSecurityKey(
+						Convert
+						.FromBase64String(builder.Configuration["Authentication:MyKey"])
+					)
+				};
+			});
+
+
 		var app = builder.Build();
 
 		using (var scope = app.Services.CreateScope()) {
@@ -86,6 +105,8 @@ public class Program {
 		}
 
 		app.UseHttpsRedirection();
+
+		app.UseAuthentication();
 
 		app.UseAuthorization();
 

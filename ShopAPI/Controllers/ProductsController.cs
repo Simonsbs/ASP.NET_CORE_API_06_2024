@@ -39,11 +39,15 @@ public class ProductsController : ControllerBase {
 
 	[HttpGet("/api/products")]
 	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(
-			string? name
+			string? name,
+			string? query
 		) {
-		ICollection<Product> results = await _repo.GetProductsAsync(name);
+		var results = await _repo.GetProductsAsync(name, query);
+		
+		// Not recomended !!!
+		// var results = _repo.GetProductsQuery();
 
-		return Ok(results);
+		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(results));
 	}
 
 	[HttpGet("{productID}", Name = "GetSingleProduct")]

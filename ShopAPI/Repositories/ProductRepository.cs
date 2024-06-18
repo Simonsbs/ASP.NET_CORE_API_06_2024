@@ -13,7 +13,9 @@ public interface IProductRepository {
 	Task AddProductForCategoryAsync(int categoryID, Product product, bool autoSave = true);
 	Task SaveChangesAsync();
 	Task DeleteProduct(Product product, bool autoSave = true);
-	Task<ICollection<Product>> GetProductsAsync(string? name);
+	Task<ICollection<Product>> GetProductsAsync(string? name, string? query);
+
+	IQueryable<Product> GetProductsQuery();
 }
 
 
@@ -56,18 +58,28 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 		await _db.SaveChangesAsync();
 	}
 
-	public async Task<ICollection<Product>> GetProductsAsync(string? name) {
-		if (string.IsNullOrWhiteSpace(name)) {
-			return await _db
-			.Products
-			.OrderBy(p => p.Name)
-			.ToListAsync();
+	// NOT RECOMENDED!!!!!
+	public IQueryable<Product> GetProductsQuery() {
+		return _db.Products.OrderBy(p => p.Name);
+	}
+
+	public async Task<ICollection<Product>> GetProductsAsync(string? name, string? query) {
+		IQueryable<Product> collection = _db.Products as IQueryable<Product>;
+
+		if (!string.IsNullOrEmpty(name)) {
+			name = name.Trim();
+			collection = collection.Where(p => p.Name == name);
 		}
 
-		return await _db
-			.Products
-			.Where(p => p.Name == name)
-			.OrderBy(p => p.Name)
-			.ToListAsync();
+		if (!string.IsNullOrEmpty(query)) {
+			query = query.Trim();
+			collection = collection.Where(p =>
+			p.Name.Contains(query) ||
+			(p.Description != null && p.Description.Contains(query)));
+		}
+
+		collection = collection.OrderBy(p => p.Name);
+
+		return await collection.ToListAsync();
 	}
 }

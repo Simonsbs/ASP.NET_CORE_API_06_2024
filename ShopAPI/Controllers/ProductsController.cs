@@ -50,12 +50,19 @@ public class ProductsController : ControllerBase {
 			pageSize = MAX_PAGE_SIZE;
 		}
 
-		var results = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
+		var (results, count) = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
 		
 		// Not recomended !!!
 		// var results = _repo.GetProductsQuery();
 
-		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(results));
+		PagingMetadataDTO<IEnumerable<ProductDTO>> pagination = new PagingMetadataDTO<IEnumerable<ProductDTO>>() {
+			TotalItemCount = count,
+			PageSize = pageSize,
+			PageNumber = pageNumber,
+			Items = _mapper.Map<IEnumerable<ProductDTO>>(results)
+		};
+
+		return Ok(pagination);
 	}
 
 	[HttpGet("{productID}", Name = "GetSingleProduct")]

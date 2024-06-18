@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -50,19 +51,19 @@ public class ProductsController : ControllerBase {
 			pageSize = MAX_PAGE_SIZE;
 		}
 
-		var (results, count) = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
-		
+		var (results, meta) = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
+
 		// Not recomended !!!
 		// var results = _repo.GetProductsQuery();
 
-		PagingMetadataDTO<IEnumerable<ProductDTO>> pagination = new PagingMetadataDTO<IEnumerable<ProductDTO>>() {
-			TotalItemCount = count,
-			PageSize = pageSize,
-			PageNumber = pageNumber,
-			Items = _mapper.Map<IEnumerable<ProductDTO>>(results)
-		};
+		//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(meta));
 
-		return Ok(pagination);
+		Response.Headers.Add("X-TotalItemCount", meta.TotalItemCount.ToString());
+		Response.Headers.Add("X-TotalPageCount", meta.TotalPageCount.ToString());
+		Response.Headers.Add("X-PageSize", meta.PageSize.ToString());
+		Response.Headers.Add("X-PageNumber", meta.PageNumber.ToString());
+
+		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(results));
 	}
 
 	[HttpGet("{productID}", Name = "GetSingleProduct")]

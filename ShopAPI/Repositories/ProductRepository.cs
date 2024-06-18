@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopAPI.Contexts;
 using ShopAPI.Entities;
+using ShopAPI.Models;
 
 namespace ShopAPI.Repositories;
 
@@ -13,7 +14,7 @@ public interface IProductRepository {
 	Task AddProductForCategoryAsync(int categoryID, Product product, bool autoSave = true);
 	Task SaveChangesAsync();
 	Task DeleteProduct(Product product, bool autoSave = true);
-	Task<(ICollection<Product>, int count)> GetProductsAsync(string? name, string? query, int pageNumber, int pageSize);
+	Task<(ICollection<Product>, PagingMetadataDTO)> GetProductsAsync(string? name, string? query, int pageNumber, int pageSize);
 
 	IQueryable<Product> GetProductsQuery();
 }
@@ -63,11 +64,13 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 		return _db.Products.OrderBy(p => p.Name);
 	}
 
-	public async Task<(ICollection<Product>, int count)> GetProductsAsync(
-		string? name,
-		string? query,
-		int pageNumber,
-		int pageSize
+	public async 
+		Task<(ICollection<Product>, PagingMetadataDTO)> 
+		GetProductsAsync(
+			string? name,
+			string? query,
+			int pageNumber,
+			int pageSize
 		) {
 		IQueryable<Product> collection = _db.Products as IQueryable<Product>;
 
@@ -85,6 +88,12 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 
 		int count = collection.Count();
 
+		PagingMetadataDTO meta = new PagingMetadataDTO {
+			TotalItemCount = count,
+			PageSize = pageSize,
+			PageNumber = pageNumber,
+		};
+
 		collection = collection
 			.OrderBy(p => p.Name)
 			.Skip((pageNumber - 1) * pageSize)
@@ -92,6 +101,6 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 
 		var items = await collection.ToListAsync();
 
-		return (items, count);
+		return (items, meta);
 	}
 }

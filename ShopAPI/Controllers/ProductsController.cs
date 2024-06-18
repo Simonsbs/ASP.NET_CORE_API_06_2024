@@ -37,6 +37,15 @@ public class ProductsController : ControllerBase {
 		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(result));
 	}
 
+	[HttpGet("/api/products")]
+	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(
+			string? name
+		) {
+		ICollection<Product> results = await _repo.GetProductsAsync(name);
+
+		return Ok(results);
+	}
+
 	[HttpGet("{productID}", Name = "GetSingleProduct")]
 	public async Task<ActionResult<ProductDTO>> GetProduct(int categoryID, int productID) {
 		if (!await _repo.CheckCategoryExists(categoryID)) {
@@ -63,7 +72,7 @@ public class ProductsController : ControllerBase {
 		Product prod = _mapper.Map<Product>(productToCreate);
 
 		await _repo.AddProductForCategoryAsync(categoryID, prod);
-		
+
 		ProductDTO productDTO = _mapper.Map<ProductDTO>(prod);
 
 		return CreatedAtRoute(

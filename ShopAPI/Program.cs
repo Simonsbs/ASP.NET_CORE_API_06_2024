@@ -13,7 +13,7 @@ public class Program {
 		var builder = WebApplication.CreateBuilder(args);
 
 		Log.Logger = new LoggerConfiguration()
-			.MinimumLevel.Warning()
+			.MinimumLevel.Information()
 #if DEBUG
 			.WriteTo.Console()
 #endif

@@ -13,6 +13,7 @@ public interface IProductRepository {
 	Task AddProductForCategoryAsync(int categoryID, Product product, bool autoSave = true);
 	Task SaveChangesAsync();
 	Task DeleteProduct(Product product, bool autoSave = true);
+	Task<ICollection<Product>> GetProductsAsync(string? name);
 }
 
 
@@ -40,7 +41,7 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 			if (autoSave) {
 				await _db.SaveChangesAsync();
 			}
-		}		
+		}
 	}
 
 	public async Task DeleteProduct(Product product, bool autoSave = true) {
@@ -55,5 +56,18 @@ public class ProductRepository(MyDbContext _db) : IProductRepository {
 		await _db.SaveChangesAsync();
 	}
 
-	
+	public async Task<ICollection<Product>> GetProductsAsync(string? name) {
+		if (string.IsNullOrWhiteSpace(name)) {
+			return await _db
+			.Products
+			.OrderBy(p => p.Name)
+			.ToListAsync();
+		}
+
+		return await _db
+			.Products
+			.Where(p => p.Name == name)
+			.OrderBy(p => p.Name)
+			.ToListAsync();
+	}
 }

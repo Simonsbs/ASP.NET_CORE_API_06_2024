@@ -14,7 +14,28 @@ public class MyDbContext : DbContext {
 	public DbSet<Category> Categories { get; set; }
 	public DbSet<Product> Products { get; set; }
 
+	public DbSet<User> Users { get; set; }
+
 	protected override void OnModelCreating(ModelBuilder modelBuilder) {
+		modelBuilder.Entity<User>().HasData(
+			new User {
+				ID = 1,
+				Username = "Simon",
+				Password = "1234",
+				Email = "Simon@Simon.com",
+				Name = "Simon Stirling",
+				AuthLevel = 9 // Admin
+			},
+			new User {
+				ID = 2,
+				Username = "Bob",
+				Password = "1234",
+				Email = "Bob@bob.com",
+				Name = "Bob Smith",
+				AuthLevel = 2 // Registered
+			}
+			);
+
 		modelBuilder.Entity<Category>()
 			.HasData(
 				new Category() {

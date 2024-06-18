@@ -31,11 +31,11 @@ public class AuthenticationController(
 
 		List<Claim> claims = new List<Claim>() {
 			new Claim("sub", user.ID.ToString()),
-			new Claim("Name", user.Name),
-			new Claim("email", user.Email),
+			//new Claim("Name", user.Name), // Maybe
+			//new Claim("email", user.Email), // Maybe
 			new Claim("auth_level", user.AuthLevel.ToString()),
-			new Claim("user", user.Username),
-			new Claim("pass", user.Password)
+			//new Claim("user", user.Username), // DONT!!!!
+			//new Claim("pass", user.Password) // DONT!!!!
 		};
 
 		SymmetricSecurityKey key = new SymmetricSecurityKey(

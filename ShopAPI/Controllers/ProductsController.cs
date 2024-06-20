@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Text.Json;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Entities;
@@ -11,6 +12,7 @@ using ShopAPI.Services;
 namespace ShopAPI.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/categories/{categoryID}/products")]
 public class ProductsController : ControllerBase {
 	const int MAX_PAGE_SIZE = 2;
@@ -18,7 +20,7 @@ public class ProductsController : ControllerBase {
 	private ILogger<ProductsController> _logger;
 	private IMailService _mailService;
 	private IProductRepository _repo;
-	private IMapper _mapper;	
+	private IMapper _mapper;
 
 	public ProductsController(ILogger<ProductsController> logger, IMailService mailService, IProductRepository repo, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -50,6 +52,13 @@ public class ProductsController : ControllerBase {
 		if (pageSize > MAX_PAGE_SIZE) {
 			pageSize = MAX_PAGE_SIZE;
 		}
+
+		// not the best policy implementation
+		//if (int.TryParse(User.Claims.FirstOrDefault(c => c.Type == "auth_level")?.Value, out int authLevel)) {
+		//	if (authLevel != 9) {
+		//		return Unauthorized();
+		//	}
+		//}
 
 		var (results, meta) = await _repo.GetProductsAsync(name, query, pageNumber, pageSize);
 
@@ -158,6 +167,7 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpDelete("{productID}")]
+	[Authorize(Policy = "IsSimon")]
 	public async Task<ActionResult> DeleteProduct(int categoryID, int productID) {
 		if (!await _repo.CheckCategoryExists(categoryID)) {
 			return NotFound("Category not found");

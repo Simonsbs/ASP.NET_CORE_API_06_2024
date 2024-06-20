@@ -86,6 +86,13 @@ public class Program {
 				};
 			});
 
+		builder.Services.AddAuthorization(o => {
+			o.AddPolicy("IsSimon", policy => {
+				policy.RequireAuthenticatedUser();
+				policy.RequireClaim("auth_level", "9");
+			});
+		});
+
 
 		var app = builder.Build();
 

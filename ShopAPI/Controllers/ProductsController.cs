@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.Json;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,7 +13,9 @@ using ShopAPI.Services;
 namespace ShopAPI.Controllers;
 
 [ApiController]
-[Authorize]
+//[Authorize]
+[ApiVersion(1)]
+[ApiVersion(2)]
 [Route("api/categories/{categoryID}/products")]
 public class ProductsController : ControllerBase {
 	const int MAX_PAGE_SIZE = 2;
@@ -167,7 +170,7 @@ public class ProductsController : ControllerBase {
 	}
 
 	[HttpDelete("{productID}")]
-	[Authorize(Policy = "IsSimon")]
+	//[Authorize(Policy = "IsSimon")]
 	public async Task<ActionResult> DeleteProduct(int categoryID, int productID) {
 		if (!await _repo.CheckCategoryExists(categoryID)) {
 			return NotFound("Category not found");

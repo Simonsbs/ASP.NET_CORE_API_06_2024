@@ -1,4 +1,5 @@
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -99,6 +100,14 @@ public class Program {
 			});
 		});
 
+		builder.Services.AddApiVersioning(o => {
+			o.ReportApiVersions = true;
+			o.DefaultApiVersion = new ApiVersion(1, 0);
+			o.AssumeDefaultVersionWhenUnspecified = true;
+		})
+		.AddMvc();
+
+		// -------------------------------------------------
 
 		var app = builder.Build();
 

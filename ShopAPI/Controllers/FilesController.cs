@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace ShopAPI.Controllers;
@@ -15,6 +16,7 @@ public class FilesController : ControllerBase {
 	}
 
 	[HttpGet("{path}")]
+	[ApiVersion(0.2, Deprecated = true)]
 	public ActionResult GetFile(string path) {
 		//string path = "File1.pdf";
 

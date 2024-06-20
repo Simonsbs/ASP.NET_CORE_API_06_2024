@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Models;
 using ShopAPI.Repositories;
@@ -8,6 +9,7 @@ namespace ShopAPI.Controllers;
 
 [ApiController]
 [Route("api/categories")]
+[ApiVersion(2)]
 public class CategoriesController(
 	ILogger<CategoriesController> _logger,
 	IMailService _mailService,

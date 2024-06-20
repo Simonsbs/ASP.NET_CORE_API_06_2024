@@ -28,7 +28,7 @@ public class EmailMessageController : ControllerBase {
 		return Ok(_mapper.Map<EmailMessageDTO>(messageToAdd));
 	}
 
-	[HttpGet]
+	[HttpGet("{id}")]
 	public async Task<ActionResult<EmailMessageDTO>> GetMessage(int id) {
 		EmailMessage? message = await _repo.GetEmail(id);
 
@@ -39,7 +39,7 @@ public class EmailMessageController : ControllerBase {
 		return Ok(_mapper.Map<EmailMessageDTO>(message));
 	}
 
-	[HttpGet]
+	[HttpGet("pending")]
 	public async Task<ActionResult<IEnumerable<EmailMessageDTO>>> GetPendingMessages() {
 		IEnumerable<EmailMessage> messages = await _repo.GetPendingMessages();
 

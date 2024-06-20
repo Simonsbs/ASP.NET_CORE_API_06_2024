@@ -9,7 +9,7 @@ public interface IEmailMessageRepository {
 
 	Task<EmailMessage?> GetEmail(int id);
 
-	Task<IEnumerable<EmailMessage>> GetPendingMessages();
+	Task<IEnumerable<EmailMessage>> GetPendingMessages(int? amount = null);
 
 	Task MarkAsSent(int id);
 }
@@ -35,10 +35,15 @@ public class EmailMessageRepository : IEmailMessageRepository {
 		return message;
 	}
 
-	public async Task<IEnumerable<EmailMessage>> GetPendingMessages() {
-		return await _db.EmailMessages
-			.Where(m => !m.Sent)
-			.ToListAsync();
+	public async Task<IEnumerable<EmailMessage>> GetPendingMessages(int? amount = null) {
+		var messages = _db.EmailMessages
+			.Where(m => !m.Sent);
+
+		if (amount.HasValue) {
+			messages = messages.Take(amount.Value);
+		}
+
+		return await messages.ToListAsync();
 	}
 
 	public async Task MarkAsSent(int id) {

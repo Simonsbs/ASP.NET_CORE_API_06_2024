@@ -16,7 +16,7 @@ namespace ShopAPI.Controllers;
 //[Authorize]
 [ApiVersion(1)]
 [ApiVersion(2)]
-[Route("api/categories/{categoryID}/products")]
+[Route("api/v{version:ApiVersion}/categories/{categoryID}/products")]
 public class ProductsController : ControllerBase {
 	const int MAX_PAGE_SIZE = 2;
 
@@ -34,7 +34,16 @@ public class ProductsController : ControllerBase {
 		//var log = HttpContext.RequestServices.GetService(typeof(ILogger<ProductsController>));
 	}
 
+	/// <summary>
+	/// Retrieves the products for a specific category.
+	/// </summary>
+	/// <param name="categoryID">The ID of the category.</param>
+	/// <returns>A list of product DTOs.</returns>
+	/// <response code="200">The list of products for the category</response>
+	/// <response code="404">Could not find the category</response>
 	[HttpGet]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(int categoryID) {
 		if (!await _repo.CheckCategoryExists(categoryID)) {
 			return NotFound("Category not found");
@@ -45,7 +54,7 @@ public class ProductsController : ControllerBase {
 		return Ok(_mapper.Map<IEnumerable<ProductDTO>>(result));
 	}
 
-	[HttpGet("/api/products")]
+	[HttpGet("/api/v{version:ApiVersion}/products")]
 	public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(
 			string? name,
 			string? query,

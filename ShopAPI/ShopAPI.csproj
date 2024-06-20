@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>5a5f636d-b5d9-4d3e-a65a-efe80b39a591</UserSecretsId>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>ShopAPI.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

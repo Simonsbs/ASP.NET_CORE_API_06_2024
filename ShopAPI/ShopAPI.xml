@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ShopAPI</name>
+    </assembly>
+    <members>
+        <member name="M:ShopAPI.Controllers.CategoriesController.GetCategories">
+            <summary>
+            Retrieves all categories.
+            </summary>
+            <returns>A list of categories without products.</returns>
+        </member>
+        <member name="M:ShopAPI.Controllers.CategoriesController.GetCategory(System.Int32)">
+            <summary>
+            Retrieves a category by its ID.
+            </summary>
+            <param name="id">The ID of the category.</param>
+            <returns>The category with or without products.</returns>
+            <response code="200">Returns the category</response>
+        </member>
+        <member name="M:ShopAPI.Controllers.CategoriesController.GetCategoryWithoutProducts(System.Int32)">
+            <summary>
+            Retrieves a category by its ID.
+            </summary>
+            <param name="id">The ID of the category.</param>
+            <returns>The category with or without products.</returns>
+            <response code="200">Returns the category</response>
+        </member>
+        <member name="M:ShopAPI.Controllers.ProductsController.GetProducts(System.Int32)">
+            <summary>
+            Retrieves the products for a specific category.
+            </summary>
+            <param name="categoryID">The ID of the category.</param>
+            <returns>A list of product DTOs.</returns>
+            <response code="200">The list of products for the category</response>
+            <response code="404">Could not find the category</response>
+        </member>
+        <member name="T:ShopAPI.Migrations.Init">
+            <inheritdoc />
+        </member>
+        <member name="M:ShopAPI.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ShopAPI.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ShopAPI.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ShopAPI.Models.ProductDTO">
+            <summary>
+            The product
+            </summary>
+        </member>
+        <member name="P:ShopAPI.Models.ProductDTO.ID">
+            <summary>
+            The product ID
+            </summary>
+        </member>
+        <member name="P:ShopAPI.Models.ProductDTO.Name">
+            <summary>
+            The product name
+            </summary>
+        </member>
+        <member name="P:ShopAPI.Models.ProductDTO.Description">
+            <summary>
+            The product description
+            </summary>
+        </member>
+    </members>
+</doc>

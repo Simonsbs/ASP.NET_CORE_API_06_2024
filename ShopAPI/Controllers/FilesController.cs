@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.StaticFiles;
 namespace ShopAPI.Controllers;
 
 [ApiController]
-[Route("api/files")]
+[Route("api/v{version:ApiVersion}/files")]
 public class FilesController : ControllerBase {
 	private FileExtensionContentTypeProvider _typeProvider;
 

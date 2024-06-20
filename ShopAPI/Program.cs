@@ -1,4 +1,5 @@
 
+using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,12 @@ public class Program {
 		//builder.Services.AddControllers();
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen();
+		builder.Services.AddSwaggerGen(o => {
+			string fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+			string docPath = Path.Combine(AppContext.BaseDirectory, fileName);
+			
+			o.IncludeXmlComments(docPath);
+		});
 
 		builder.Services.
 			AddSingleton<FileExtensionContentTypeProvider>();

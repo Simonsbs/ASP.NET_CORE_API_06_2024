@@ -8,33 +8,60 @@ using ShopAPI.Services;
 namespace ShopAPI.Controllers;
 
 [ApiController]
-[Route("api/categories")]
+[Route("api/v{version:ApiVersion}/categories")]
 [ApiVersion(2)]
 public class CategoriesController(
-	ILogger<CategoriesController> _logger,
-	IMailService _mailService,
-	ICategoryRepository _repo,
-	IMapper _mapper)
-	: ControllerBase {
+		ILogger<CategoriesController> _logger,
+		IMailService _mailService,
+		ICategoryRepository _repo,
+		IMapper _mapper)
+		: ControllerBase {
 
+	/// <summary>
+	/// Retrieves all categories.
+	/// </summary>
+	/// <returns>A list of categories without products.</returns>
 	[HttpGet]
+	[ProducesResponseType(typeof(IEnumerable<CategoryWithoutProductsDTO>), 200)]
 	public async Task<ActionResult<IEnumerable<CategoryWithoutProductsDTO>>> GetCategories() {
 		IEnumerable<Entities.Category> categories = await _repo.GetCategoriesAsync();
 		var results = _mapper.Map<IEnumerable<CategoryWithoutProductsDTO>>(categories);
 		return Ok(results);
 	}
 
+
+	/// <summary>
+	/// Retrieves a category by its ID.
+	/// </summary>
+	/// <param name="id">The ID of the category.</param>
+	/// <returns>The category with or without products.</returns>
+	/// <response code="200">Returns the category</response>
+	[HttpGet("{id}/withproducts/")]
+	[ProducesResponseType(200)]
+	[ProducesResponseType(404)]
+	public async Task<ActionResult<CategoryDTO>> GetCategory(int id) {
+		return await GetCategorySharedAsync<CategoryDTO>(id);
+	}
+
+	/// <summary>
+	/// Retrieves a category by its ID.
+	/// </summary>
+	/// <param name="id">The ID of the category.</param>
+	/// <returns>The category with or without products.</returns>
+	/// <response code="200">Returns the category</response>
 	[HttpGet("{id}")]
-	public async Task<IActionResult> GetCategory(int id, bool includeProducts = false) {
+	[ProducesResponseType(200)]
+	[ProducesResponseType(404)]
+	public async Task<ActionResult<CategoryWithoutProductsDTO>> GetCategoryWithoutProducts(int id) {
+		return await GetCategorySharedAsync<CategoryWithoutProductsDTO>(id, false);
+	}
+
+	private async Task<ActionResult<T>> GetCategorySharedAsync<T>(int id, bool includeProducts = true) {
 		var category = await _repo.GetCategoryAsync(id, includeProducts);
 		if (category == null) {
 			return NotFound();
 		}
 
-		if (includeProducts) {
-			return Ok(_mapper.Map<CategoryDTO>(category));
-		}
-
-		return Ok(_mapper.Map<CategoryWithoutProductsDTO>(category));
+		return Ok(_mapper.Map<T>(category));
 	}
 }

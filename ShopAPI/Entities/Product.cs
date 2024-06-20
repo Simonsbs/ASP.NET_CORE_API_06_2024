@@ -14,12 +14,12 @@ public class Product {
 	[MaxLength(200)]
 	public string? Description { get; set; }
 
-    public float Price { get; set; }
+	public float Price { get; set; }
 
-    //[ForeignKey("CategoryID")]
-    public Category? Category { get; set; }
+	//[ForeignKey("CategoryID")]
+	public Category? Category { get; set; }
 
-    public int CategoryID { get; set; }
+	public int CategoryID { get; set; }
 }
 
 
@@ -34,15 +34,24 @@ public class Category {
 	[MaxLength(200)]
 	public string Description { get; set; }
 
-    public List<Product> Products { get; set; } = new List<Product>();
+	public List<Product> Products { get; set; } = new List<Product>();
 }
 
 public class User {
 	[Key]
-    public int ID { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
+	public int ID { get; set; }
+
+	[MaxLength(100)]
+	public string Username { get; set; }
+
+	[MaxLength(100)]
+	public string Password { get; set; }
+
+	[MaxLength(100)]
 	public string Email { get; set; }
-    public string Name { get; set; }
-    public int AuthLevel { get; set; }
+
+	[MaxLength(100)]
+	public string Name { get; set; }
+
+	public int AuthLevel { get; set; }
 }

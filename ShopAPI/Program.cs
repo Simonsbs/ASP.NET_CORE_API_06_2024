@@ -60,8 +60,14 @@ public class Program {
 		builder.Services.AddTransient<IMailService, ProductionMailService>();
 #endif
 
-		builder.Services.AddDbContext<MyDbContext>(options =>
-			options.UseSqlite(builder.Configuration["ConnectionStrings:Main"]));
+		if (builder.Configuration["Database:Source"] == "MS-SQL") {
+			builder.Services.AddDbContext<MyDbContext>(options =>
+				options.UseSqlServer(builder.Configuration["ConnectionStrings:MS-SQL"]));
+		} else { // is SQLITE
+			builder.Services.AddDbContext<MyDbContext>(options =>
+				options.UseSqlite(builder.Configuration["ConnectionStrings:Main"]));
+		}
+
 
 		builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 		builder.Services.AddScoped<IProductRepository, ProductRepository>();

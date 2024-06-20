@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,9 @@ using ShopAPI.Services;
 namespace ShopAPI.Controllers;
 
 [ApiController]
-[Route("api/authentication")]
+[Route("api/v{version:ApiVersion}/authentication")]
+[ApiVersion(1)]
+[ApiVersion(2)]
 public class AuthenticationController(
 	ILogger<AuthenticationController> _logger,
 	IUserRepository _repo,

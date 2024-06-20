@@ -13,7 +13,7 @@ using ShopAPI.Services;
 namespace ShopAPI.Controllers;
 
 [ApiController]
-//[Authorize]
+[Authorize]
 [ApiVersion(1)]
 [ApiVersion(2)]
 [Route("api/v{version:ApiVersion}/categories/{categoryID}/products")]
